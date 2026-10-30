@@ -76,13 +76,29 @@ This first version focuses on connection handling and sending queries through Un
 
 Not included yet: an ORM, query builder, connection pool, automatic retries, or PostgreSQL wire-protocol compatibility. Parameterized queries are not advertised until the server supports them end to end.
 
-## Run tests
+## Run unit tests
 
 ```sh
 npm test
 ```
 
-The tests use a small local TCP test server, so they do not require a running UniDB database.
+The unit tests use a small local TCP test server, so they do not require a running UniDB database.
+
+## Run end-to-end tests
+
+End-to-end tests connect this client to a real UniDB C++ server. They require the UniDB repository to be checked out and its server executable to be built.
+
+```sh
+# From the unidb-node repository root; adjust the path if needed.
+cmake -S ../UniDB -B ../UniDB/build
+cmake --build ../UniDB/build --target unidb --parallel 2
+
+../UniDB/build/unidb start --db-path /tmp/unidb-node-e2e.db --port 17432
+UNIDB_HOST=127.0.0.1 UNIDB_PORT=17432 npm run test:e2e
+../UniDB/build/unidb stop --db-path /tmp/unidb-node-e2e.db --port 17432
+```
+
+The E2E suite creates uniquely named tables and covers table creation, row insertion, row selection, and server-side query errors. The GitHub Actions E2E workflow builds UniDB from its `main` branch, starts it with a temporary database, runs the client tests, and stops the server even if a test fails.
 
 ## License
 

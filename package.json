@@ -12,7 +12,8 @@
     }
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test test/*.test.js",
+    "test:e2e": "node --test --test-concurrency=1 test/integration/*.test.js"
   },
   "engines": {
     "node": ">=18"
